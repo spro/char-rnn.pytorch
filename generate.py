@@ -1,4 +1,4 @@
-# https://github.com/spro/practical-pytorch
+# https://github.com/spro/char-rnn.pytorch
 
 import torch
 

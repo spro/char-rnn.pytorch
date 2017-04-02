@@ -1,4 +1,4 @@
-# https://github.com/spro/practical-pytorch
+# https://github.com/spro/char-rnn.pytorch
 
 import torch
 import torch.nn as nn
@@ -31,7 +31,7 @@ def random_training_set(chunk_len):
     target = char_tensor(chunk[1:])
     return inp, target
 
-decoder = RNN(n_characters, args.hidden_size, n_characters, args.n_layers)
+decoder = CharRNN(n_characters, args.hidden_size, n_characters, args.n_layers)
 decoder_optimizer = torch.optim.Adam(decoder.parameters(), lr=args.learning_rate)
 criterion = nn.CrossEntropyLoss()
 
