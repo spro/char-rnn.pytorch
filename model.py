@@ -17,11 +17,18 @@ class CharRNN(nn.Module):
         self.decoder = nn.Linear(hidden_size, output_size)
 
     def forward(self, input, hidden):
-        input = self.encoder(input.view(1, -1))
-        output, hidden = self.gru(input.view(1, 1, -1), hidden)
+        batch_size = input.size(0)
+        encoded = self.encoder(input)
+        output, hidden = self.gru(encoded.view(1, batch_size, -1), hidden)
+        output = self.decoder(output.view(batch_size, -1))
+        return output, hidden
+
+    def forward2(self, input, hidden):
+        encoded = self.encoder(input.view(1, -1))
+        output, hidden = self.gru(encoded.view(1, 1, -1), hidden)
         output = self.decoder(output.view(1, -1))
         return output, hidden
 
-    def init_hidden(self):
-        return Variable(torch.zeros(self.n_layers, 1, self.hidden_size))
+    def init_hidden(self, batch_size):
+        return Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size))
 

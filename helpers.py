@@ -6,7 +6,6 @@ import random
 import time
 import math
 import torch
-from torch.autograd import Variable
 
 # Reading and un-unicode-encoding data
 
@@ -23,7 +22,7 @@ def char_tensor(string):
     tensor = torch.zeros(len(string)).long()
     for c in range(len(string)):
         tensor[c] = all_characters.index(string[c])
-    return Variable(tensor)
+    return tensor
 
 # Readable time elapsed
 
