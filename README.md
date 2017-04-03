@@ -20,15 +20,17 @@ After training the model will be saved as `[filename].pt`.
 ### Training options
 
 ```
-Usage: generate.py [filename] [options]
+Usage: train.py [filename] [options]
 
 Options:
---n_epochs         Number of epochs to train
---print_every      Log learning rate at this interval
---hidden_size      Hidden size of GRU
---n_layers         Number of GRU layers
---learning_rate    Learning rate
---chunk_len        Length of chunks to train on at a time
+--n_epochs         Number of epochs to train           2000
+--print_every      Log learning rate at this interval  100
+--hidden_size      Hidden size of GRU                  50
+--n_layers         Number of GRU layers                2
+--learning_rate    Learning rate                       0.01
+--chunk_len        Length of training chunks           200
+--batch_size       Number of examples per batch        100
+--cuda             Use CUDA
 ```
 
 ## Generation
@@ -53,5 +55,6 @@ Options:
 -p, --prime_str      String to prime generation with
 -l, --predict_len    Length of prediction
 -t, --temperature    Temperature (higher is more chaotic)
+--cuda               Use CUDA
 ```
 
