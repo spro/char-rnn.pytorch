@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # https://github.com/spro/char-rnn.pytorch
 
 import torch
@@ -13,6 +14,8 @@ from generate import *
 # Parse command line arguments
 argparser = argparse.ArgumentParser()
 argparser.add_argument('filename', type=str)
+argparser.add_argument('--model', type=str, default="gru")
+argparser.add_argument("--bidirectional", action="store_true", default=False)
 argparser.add_argument('--n_epochs', type=int, default=2000)
 argparser.add_argument('--print_every', type=int, default=100)
 argparser.add_argument('--hidden_size', type=int, default=100)
@@ -67,7 +70,13 @@ def save():
 
 # Initialize models and start training
 
-decoder = CharRNN(n_characters, args.hidden_size, n_characters, args.n_layers)
+decoder = CharRNN(
+    n_characters,
+    args.hidden_size,
+    n_characters,
+    model=args.model,
+    n_layers=args.n_layers,
+)
 decoder_optimizer = torch.optim.Adam(decoder.parameters(), lr=args.learning_rate)
 criterion = nn.CrossEntropyLoss()
 

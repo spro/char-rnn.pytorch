@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # https://github.com/spro/char-rnn.pytorch
 
 import torch
