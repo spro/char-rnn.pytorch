@@ -19,11 +19,17 @@ argparser.add_argument('--hidden_size', type=int, default=50)
 argparser.add_argument('--n_layers', type=int, default=2)
 argparser.add_argument('--learning_rate', type=float, default=0.01)
 argparser.add_argument('--chunk_len', type=int, default=200)
+argparser.add_argument('--shuffle', action='store_true')
 args = argparser.parse_args()
 
 file, file_len = read_file(args.filename)
 
 def random_training_set(chunk_len):
+    global file
+    if args.shuffle:
+        lines = file.split('\n')
+        random.shuffle(lines)
+        file = '\n'.join(lines)
     start_index = random.randint(0, file_len - chunk_len)
     end_index = start_index + chunk_len + 1
     chunk = file[start_index:end_index]
