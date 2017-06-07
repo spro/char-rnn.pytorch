@@ -7,6 +7,8 @@ from torch.autograd import Variable
 import argparse
 import os
 
+from tqdm import tqdm
+
 from helpers import *
 from model import *
 from generate import *
@@ -15,7 +17,6 @@ from generate import *
 argparser = argparse.ArgumentParser()
 argparser.add_argument('filename', type=str)
 argparser.add_argument('--model', type=str, default="gru")
-argparser.add_argument("--bidirectional", action="store_true", default=False)
 argparser.add_argument('--n_epochs', type=int, default=2000)
 argparser.add_argument('--print_every', type=int, default=100)
 argparser.add_argument('--hidden_size', type=int, default=100)
@@ -89,7 +90,7 @@ loss_avg = 0
 
 try:
     print("Training for %d epochs..." % args.n_epochs)
-    for epoch in range(1, args.n_epochs + 1):
+    for epoch in tqdm(range(1, args.n_epochs + 1)):
         loss = train(*random_training_set(args.chunk_len, args.batch_size))
         loss_avg += loss
 
