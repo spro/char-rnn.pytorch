@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # https://github.com/spro/char-rnn.pytorch
 
 import torch
@@ -6,6 +7,8 @@ from torch.autograd import Variable
 import argparse
 import os
 
+from tqdm import tqdm
+
 from helpers import *
 from model import *
 from generate import *
@@ -13,6 +16,7 @@ from generate import *
 # Parse command line arguments
 argparser = argparse.ArgumentParser()
 argparser.add_argument('filename', type=str)
+argparser.add_argument('--model', type=str, default="gru")
 argparser.add_argument('--n_epochs', type=int, default=2000)
 argparser.add_argument('--print_every', type=int, default=100)
 argparser.add_argument('--hidden_size', type=int, default=100)
@@ -67,7 +71,13 @@ def save():
 
 # Initialize models and start training
 
-decoder = CharRNN(n_characters, args.hidden_size, n_characters, args.n_layers)
+decoder = CharRNN(
+    n_characters,
+    args.hidden_size,
+    n_characters,
+    model=args.model,
+    n_layers=args.n_layers,
+)
 decoder_optimizer = torch.optim.Adam(decoder.parameters(), lr=args.learning_rate)
 criterion = nn.CrossEntropyLoss()
 
@@ -80,7 +90,7 @@ loss_avg = 0
 
 try:
     print("Training for %d epochs..." % args.n_epochs)
-    for epoch in range(1, args.n_epochs + 1):
+    for epoch in tqdm(range(1, args.n_epochs + 1)):
         loss = train(*random_training_set(args.chunk_len, args.batch_size))
         loss_avg += loss
 

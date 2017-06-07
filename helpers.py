@@ -21,7 +21,10 @@ def read_file(filename):
 def char_tensor(string):
     tensor = torch.zeros(len(string)).long()
     for c in range(len(string)):
-        tensor[c] = all_characters.index(string[c])
+        try:
+            tensor[c] = all_characters.index(string[c])
+        except:
+            continue
     return tensor
 
 # Readable time elapsed

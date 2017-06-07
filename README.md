@@ -23,6 +23,7 @@ After training the model will be saved as `[filename].pt`.
 Usage: train.py [filename] [options]
 
 Options:
+--model            Whether to use LSTM or GRU units    gru
 --n_epochs         Number of epochs to train           2000
 --print_every      Log learning rate at this interval  100
 --hidden_size      Hidden size of GRU                  50
