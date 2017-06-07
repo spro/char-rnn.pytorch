@@ -24,7 +24,6 @@ Usage: train.py [filename] [options]
 
 Options:
 --model            Whether to use LSTM or GRU units    GRU
---bidirectional                                        False
 --n_epochs         Number of epochs to train           2000
 --print_every      Log learning rate at this interval  100
 --hidden_size      Hidden size of GRU                  50
