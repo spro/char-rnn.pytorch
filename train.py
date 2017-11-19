@@ -49,20 +49,22 @@ def random_training_set(chunk_len, batch_size):
     return inp, target
 
 def train(inp, target):
+    """
+      inp: (batch_size, seq_size)
+      target: (batch_size, seq_size)
+    """
     hidden = decoder.init_hidden(args.batch_size)
     if args.cuda:
         hidden = hidden.cuda()
     decoder.zero_grad()
-    loss = 0
 
-    for c in range(args.chunk_len):
-        output, hidden = decoder(inp[:,c], hidden)
-        loss += criterion(output.view(args.batch_size, -1), target[:,c])
+    output, hidden = decoder(inp, hidden)
+    loss = criterion(output.view(-1, output.size(-1)), target.view(-1))
 
     loss.backward()
     decoder_optimizer.step()
 
-    return loss.data[0] / args.chunk_len
+    return loss.data[0]
 
 def save():
     save_filename = os.path.splitext(os.path.basename(args.filename))[0] + '.pt'

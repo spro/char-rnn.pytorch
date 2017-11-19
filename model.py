@@ -15,22 +15,20 @@ class CharRNN(nn.Module):
 
         self.encoder = nn.Embedding(input_size, hidden_size)
         if self.model == "gru":
-            self.rnn = nn.GRU(hidden_size, hidden_size, n_layers)
+            self.rnn = nn.GRU(hidden_size, hidden_size, n_layers, batch_first=True)
         elif self.model == "lstm":
-            self.rnn = nn.LSTM(hidden_size, hidden_size, n_layers)
+            self.rnn = nn.LSTM(hidden_size, hidden_size, n_layers, batch_first=True)
         self.decoder = nn.Linear(hidden_size, output_size)
 
     def forward(self, input, hidden):
+        """
+          input: shape=(batch_size, seq_size)
+          output: shape=(batch_size, seq_size, output_size)
+        """
         batch_size = input.size(0)
         encoded = self.encoder(input)
-        output, hidden = self.rnn(encoded.view(1, batch_size, -1), hidden)
-        output = self.decoder(output.view(batch_size, -1))
-        return output, hidden
-
-    def forward2(self, input, hidden):
-        encoded = self.encoder(input.view(1, -1))
-        output, hidden = self.rnn(encoded.view(1, 1, -1), hidden)
-        output = self.decoder(output.view(1, -1))
+        output, hidden = self.rnn(encoded, hidden)
+        output = self.decoder(output)
         return output, hidden
 
     def init_hidden(self, batch_size):
