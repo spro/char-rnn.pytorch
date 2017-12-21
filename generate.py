@@ -10,7 +10,7 @@ from model import *
 
 def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=False):
     hidden = decoder.init_hidden(1)
-    prime_input = Variable(char_tensor(prime_str).unsqueeze(0))
+    prime_input = Variable(char_tensor(prime_str).unsqueeze(0), volatile=True)
 
     if cuda:
         hidden = hidden.cuda()
@@ -18,14 +18,13 @@ def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=Fals
     predicted = prime_str
 
     # Use priming string to "build up" hidden state
-    for p in range(len(prime_str) - 1):
-        _, hidden = decoder(prime_input[:,p], hidden)
-        
-    inp = prime_input[:,-1]
-    
+    _, hidden = decoder(prime_input, hidden)
+
+    inp = prime_input[0,-1].unsqueeze(0)
+
     for p in range(predict_len):
         output, hidden = decoder(inp, hidden)
-        
+
         # Sample from the network as a multinomial distribution
         output_dist = output.data.view(-1).div(temperature).exp()
         top_i = torch.multinomial(output_dist, 1)[0]
@@ -33,7 +32,7 @@ def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=Fals
         # Add predicted character to string and use as next input
         predicted_char = all_characters[top_i]
         predicted += predicted_char
-        inp = Variable(char_tensor(predicted_char).unsqueeze(0))
+        inp = Variable(char_tensor(predicted_char).unsqueeze(0), volatile=True)
         if cuda:
             inp = inp.cuda()
 
