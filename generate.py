@@ -8,9 +8,9 @@ import argparse
 from helpers import *
 from model import *
 
-def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=False):
+def generate(decoder, vocab, prime_str='A', predict_len=100, temperature=0.8, cuda=False):
     hidden = decoder.init_hidden(1)
-    prime_input = Variable(char_tensor(prime_str).unsqueeze(0))
+    prime_input = Variable(char_tensor(prime_str, vocab).unsqueeze(0))
 
     if cuda:
         hidden = hidden.cuda()
@@ -31,9 +31,9 @@ def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=Fals
         top_i = torch.multinomial(output_dist, 1)[0]
 
         # Add predicted character to string and use as next input
-        predicted_char = all_characters[top_i]
+        predicted_char = vocab[top_i]
         predicted += predicted_char
-        inp = Variable(char_tensor(predicted_char).unsqueeze(0))
+        inp = Variable(char_tensor(predicted_char, vocab).unsqueeze(0))
         if cuda:
             inp = inp.cuda()
 
@@ -51,7 +51,11 @@ if __name__ == '__main__':
     argparser.add_argument('--cuda', action='store_true')
     args = argparser.parse_args()
 
-    decoder = torch.load(args.filename)
+    try:
+        vocab, decoder = torch.load(args.filename)
+    except TypeError:
+        vocab = string.printable
+        decoder = torch.load(args.filename)
     del args.filename
-    print(generate(decoder, **vars(args)))
+    print(generate(decoder, vocab, **vars(args)))
 

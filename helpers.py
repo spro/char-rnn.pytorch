@@ -1,28 +1,25 @@
 # https://github.com/spro/char-rnn.pytorch
 
-import unidecode
 import string
 import random
 import time
 import math
 import torch
 
-# Reading and un-unicode-encoding data
-
-all_characters = string.printable
-n_characters = len(all_characters)
+# Reading and extracting vocab from data
 
 def read_file(filename):
-    file = unidecode.unidecode(open(filename).read())
-    return file, len(file)
+    file = open(filename).read()
+    vocab = ''.join(sorted(set(file)))
+    return file, len(file), vocab
 
 # Turning a string into a tensor
 
-def char_tensor(string):
+def char_tensor(string, vocab):
     tensor = torch.zeros(len(string)).long()
     for c in range(len(string)):
         try:
-            tensor[c] = all_characters.index(string[c])
+            tensor[c] = vocab.index(string[c])
         except:
             continue
     return tensor
