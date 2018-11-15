@@ -33,9 +33,10 @@ class CharRNN(nn.Module):
         output = self.decoder(output.view(1, -1))
         return output, hidden
 
-    def init_hidden(self, batch_size):
+    def init_hidden(self, batch_size, cuda):
+        cuda_wrapper = lambda x: x.cuda() if cuda else x
         if self.model == "lstm":
-            return (Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size)),
-                    Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size)))
-        return Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size))
+            return (cuda_wrapper(Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size))),
+                    cuda_wrapper(Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size))))
+        return cuda_wrapper(Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size)))
 
