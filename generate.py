@@ -10,7 +10,7 @@ from model import *
 
 def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=False):
     hidden = decoder.init_hidden(1, cuda)
-    prime_input = Variable(char_tensor(prime_str).unsqueeze(0))
+    prime_input = Variable(char_tensor(prime_str).unsqueeze(0), volatile=True)
 
     if cuda:
         prime_input = prime_input.cuda()
@@ -32,7 +32,7 @@ def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=Fals
         # Add predicted character to string and use as next input
         predicted_char = all_characters[top_i]
         predicted += predicted_char
-        inp = Variable(char_tensor(predicted_char).unsqueeze(0))
+        inp = Variable(char_tensor(predicted_char).unsqueeze(0), volatile=True)
         if cuda:
             inp = inp.cuda()
 

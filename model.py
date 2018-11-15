@@ -27,12 +27,6 @@ class CharRNN(nn.Module):
         output = self.decoder(output.view(batch_size, -1))
         return output, hidden
 
-    def forward2(self, input, hidden):
-        encoded = self.encoder(input.view(1, -1))
-        output, hidden = self.rnn(encoded.view(1, 1, -1), hidden)
-        output = self.decoder(output.view(1, -1))
-        return output, hidden
-
     def init_hidden(self, batch_size, cuda):
         cuda_wrapper = lambda x: x.cuda() if cuda else x
         if self.model == "lstm":
