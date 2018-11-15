@@ -10,18 +10,16 @@ from model import *
 
 def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=False):
     hidden = decoder.init_hidden(1, cuda)
-    prime_input = Variable(char_tensor(prime_str).unsqueeze(0), volatile=True)
+    prime_input = Variable(char_tensor(prime_str).unsqueeze(0))
 
     if cuda:
         prime_input = prime_input.cuda()
     predicted = prime_str
 
     # Use priming string to "build up" hidden state
-    for p in range(len(prime_str) - 1):
-        _, hidden = decoder(prime_input[:,p], hidden)
-        
-    inp = prime_input[:,-1]
-    
+    _, hidden = decoder(prime_input, hidden)
+    inp = prime_input[0,-1].unsqueeze(0)
+    print inp.shape, prime_input.shape, hidden.shape
     for p in range(predict_len):
         output, hidden = decoder(inp, hidden)
         
@@ -32,7 +30,7 @@ def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=Fals
         # Add predicted character to string and use as next input
         predicted_char = all_characters[top_i]
         predicted += predicted_char
-        inp = Variable(char_tensor(predicted_char).unsqueeze(0), volatile=True)
+        inp = Variable(char_tensor(predicted_char).unsqueeze(0))
         if cuda:
             inp = inp.cuda()
 
@@ -52,5 +50,6 @@ if __name__ == '__main__':
 
     decoder = torch.load(args.filename, map_location = 'cuda' if args.cuda else 'cpu')
     del args.filename
-    print(generate(decoder, **vars(args)))
+    with torch.no_grad():
+        print(generate(decoder, **vars(args)))
 
