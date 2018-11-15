@@ -31,7 +31,7 @@ args = argparser.parse_args()
 if args.cuda:
     print("Using CUDA")
 
-file, file_len = read_file(args.filename)
+file, file_len, all_characters, n_characters = read_file(args.filename)
 
 def random_training_set(chunk_len, batch_size):
     inp = torch.LongTensor(batch_size, chunk_len)
@@ -40,8 +40,8 @@ def random_training_set(chunk_len, batch_size):
         start_index = random.randint(0, file_len - chunk_len - 1)
         end_index = start_index + chunk_len + 1
         chunk = file[start_index:end_index]
-        inp[bi] = char_tensor(chunk[:-1])
-        target[bi] = char_tensor(chunk[1:])
+        inp[bi] = char_tensor(chunk[:-1], all_characters)
+        target[bi] = char_tensor(chunk[1:], all_characters)
     inp = Variable(inp)
     target = Variable(target)
     if args.cuda:
@@ -67,7 +67,7 @@ def train(inp, target):
 
 def save():
     save_filename = os.path.splitext(os.path.basename(args.filename))[0] + '.pt'
-    torch.save(decoder, save_filename)
+    torch.save((all_characters, decoder), save_filename)
     print('Saved as %s' % save_filename)
 
 # Initialize models and start training
