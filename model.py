@@ -25,7 +25,6 @@ class CharRNN(nn.Module):
             input: shape=(batch_size, seq_size)
             output: shape=(batch_size, seq_size, output_size)
         """
-        batch_size = input.size(0)
         encoded = self.encoder(input)
         output, hidden = self.rnn(encoded, hidden)
         output = self.decoder(output)

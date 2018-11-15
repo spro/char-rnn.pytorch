@@ -18,8 +18,8 @@ def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=Fals
 
     # Use priming string to "build up" hidden state
     _, hidden = decoder(prime_input, hidden)
-    inp = prime_input[0,-1].unsqueeze(0)
-    print inp.shape, prime_input.shape, hidden.shape
+    inp = prime_input[0,-1].view(1, -1)
+
     for p in range(predict_len):
         output, hidden = decoder(inp, hidden)
         
