@@ -23,7 +23,7 @@ argparser.add_argument('--hidden_size', type=int, default=128)
 argparser.add_argument('--n_layers', type=int, default=2)
 argparser.add_argument('--learning_rate', type=float, default=0.01)
 argparser.add_argument('--chunk_len', type=int, default=200)
-argparser.add_argument('--batch_size', type=int, default=64)
+argparser.add_argument('--batch_size', type=int, default=128)
 argparser.add_argument('--shuffle', action='store_true')
 argparser.add_argument('--cuda', action='store_true')
 args = argparser.parse_args()
@@ -63,7 +63,7 @@ def train(inp, target):
     loss.backward()
     decoder_optimizer.step()
 
-    return loss.item() / args.chunk_len
+    return loss.item()
 
 def save():
     save_filename = os.path.splitext(os.path.basename(args.filename))[0] + '.pt'
