@@ -26,11 +26,11 @@ Options:
 --model            Whether to use LSTM or GRU units    gru
 --n_epochs         Number of epochs to train           2000
 --print_every      Log learning rate at this interval  100
---hidden_size      Hidden size of GRU                  50
+--hidden_size      Hidden size of GRU                  128
 --n_layers         Number of GRU layers                2
 --learning_rate    Learning rate                       0.01
 --chunk_len        Length of training chunks           200
---batch_size       Number of examples per batch        100
+--batch_size       Number of examples per batch        64
 --cuda             Use CUDA
 ```
 
