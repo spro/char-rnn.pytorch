@@ -97,7 +97,7 @@ try:
 
         if epoch % args.print_every == 0:
             print('[%s (%d %d%%) %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss))
-            print(generate(decoder, 'Wh', 100, cuda=args.cuda), '\n')
+            print(generate(decoder, all_characters, 'Wh', 100, cuda=args.cuda), '\n')
 
     print("Saving...")
     save()
