@@ -2,7 +2,6 @@
 
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
 
 class CharRNN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, model="gru", n_layers=1):
@@ -35,7 +34,7 @@ class CharRNN(nn.Module):
 
     def init_hidden(self, batch_size):
         if self.model == "lstm":
-            return (Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size)),
-                    Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size)))
-        return Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size))
+            return (torch.zeros(self.n_layers, batch_size, self.hidden_size),
+                    torch.zeros(self.n_layers, batch_size, self.hidden_size))
+        return torch.zeros(self.n_layers, batch_size, self.hidden_size)
 
