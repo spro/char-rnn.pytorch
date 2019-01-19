@@ -14,7 +14,7 @@ class CharRNN(nn.Module):
         self.n_layers = n_layers
 
         self.encoder = nn.Embedding(input_size, hidden_size)
-        self.rnn = getattr(nn, rnn_type)(input_size=input_size, hidden_size=hidden_size, num_layers=n_layers)
+        self.rnn = getattr(nn, rnn_type)(input_size=hidden_size, hidden_size=hidden_size, num_layers=n_layers)
         self.decoder = nn.Linear(hidden_size, output_size)
 
     def forward(self, input, hidden):
