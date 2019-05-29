@@ -38,8 +38,17 @@ def random_training_set(chunk_len, batch_size):
     target = torch.LongTensor(batch_size, chunk_len)
     for bi in range(batch_size):
         start_index = random.randint(0, file_len - chunk_len)
+
+        while(file[start_index]!='\n'):  # first word should be the actual start of a sentence.
+            start_index = start_index+1
+
         end_index = start_index + chunk_len + 1
+
+        if(end_index>file_len): # if we ended after the last char of the file, come back to get a correct chunk len
+            start_index = file_len-chunk_len-1
+
         chunk = file[start_index:end_index]
+
         inp[bi] = char_tensor(chunk[:-1])
         target[bi] = char_tensor(chunk[1:])
     inp = Variable(inp)
@@ -62,13 +71,17 @@ def train(inp, target):
 
     loss.backward()
     decoder_optimizer.step()
-
-    return loss.data[0] / args.chunk_len
+    currentLoss = loss.item() / args.chunk_len
+    return currentLoss
 
 def save():
     save_filename = os.path.splitext(os.path.basename(args.filename))[0] + '.pt'
     torch.save(decoder, save_filename)
     print('Saved as %s' % save_filename)
+
+
+
+
 
 # Initialize models and start training
 
@@ -97,7 +110,7 @@ try:
 
         if epoch % args.print_every == 0:
             print('[%s (%d %d%%) %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss))
-            print(generate(decoder, 'Wh', 100, cuda=args.cuda), '\n')
+            print(generate(decoder, 'Renzi', 100, cuda=args.cuda), '\n')
 
     print("Saving...")
     save()

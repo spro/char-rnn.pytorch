@@ -59,3 +59,10 @@ Options:
 --cuda               Use CUDA
 ```
 
+### TODO
+```
+[] Add Dropout (p)
+[] Add Validation set to monitor overfitting
+
+```
+

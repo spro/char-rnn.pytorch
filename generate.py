@@ -24,18 +24,23 @@ def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=Fals
     inp = prime_input[:,-1]
     
     for p in range(predict_len):
+
+
         output, hidden = decoder(inp, hidden)
-        
+
         # Sample from the network as a multinomial distribution
         output_dist = output.data.view(-1).div(temperature).exp()
         top_i = torch.multinomial(output_dist, 1)[0]
 
         # Add predicted character to string and use as next input
         predicted_char = all_characters[top_i]
-        predicted += predicted_char
-        inp = Variable(char_tensor(predicted_char).unsqueeze(0))
-        if cuda:
-            inp = inp.cuda()
+        if(predicted_char=='\n'):
+            break
+        else:
+            predicted += predicted_char
+            inp = Variable(char_tensor(predicted_char).unsqueeze(0))
+            if cuda:
+                inp = inp.cuda()
 
     return predicted
 
