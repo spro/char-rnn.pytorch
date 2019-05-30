@@ -4,9 +4,13 @@
 import torch
 import os
 import argparse
+import string
 
 from helpers import *
 from model import *
+
+all_characters = string.printable
+n_characters = len(all_characters)
 
 def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=False):
     hidden = decoder.init_hidden(1)
@@ -19,9 +23,9 @@ def generate(decoder, prime_str='A', predict_len=100, temperature=0.8, cuda=Fals
 
     # Use priming string to "build up" hidden state
     for p in range(len(prime_str) - 1):
-        _, hidden = decoder(prime_input[:,p], hidden)
+        _, hidden = decoder(prime_input[:, p], hidden)
         
-    inp = prime_input[:,-1]
+    inp = prime_input[:, -1]
     
     for p in range(predict_len):
 

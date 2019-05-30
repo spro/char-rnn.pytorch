@@ -8,6 +8,7 @@ import argparse
 import os
 
 from tqdm import tqdm
+import string
 
 from helpers import *
 from model import *
@@ -39,8 +40,8 @@ def random_training_set(chunk_len, batch_size):
     for bi in range(batch_size):
         start_index = random.randint(0, file_len - chunk_len)
 
-        while(file[start_index]!='\n'):  # first word should be the actual start of a sentence.
-            start_index = start_index+1
+        # while(file[start_index]!='\n'):  # first word should be the actual start of a sentence.
+        #     start_index = start_index+1
 
         end_index = start_index + chunk_len + 1
 
@@ -108,6 +109,9 @@ def save():
 
 # Initialize models and start training
 
+all_characters = string.printable
+n_characters = len(all_characters)
+
 decoder = CharRNN(
     n_characters,
     args.hidden_size,
@@ -130,6 +134,7 @@ try:
     for epoch in tqdm(range(1, args.n_epochs + 1)):
         end_index = 0
         while(end_index < file_len) :
+
         # loss = train(*random_training_set(args.chunk_len, args.batch_size))
             loss, end_index = train(*getBatch(args.chunk_len, args.batch_size, end_index))
             loss_avg += loss
