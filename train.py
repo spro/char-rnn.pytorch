@@ -58,7 +58,30 @@ def random_training_set(chunk_len, batch_size):
         target = target.cuda()
     return inp, target
 
-def train(inp, target):
+
+def getBatch(chunk_len, batch_size, chunk_start):
+    inp = torch.LongTensor(batch_size, chunk_len)
+    target = torch.LongTensor(batch_size, chunk_len)
+    end_index = chunk_start
+    for bi in range(batch_size):
+        start_index = end_index
+        end_index = start_index + chunk_len + 1
+
+        if (end_index > file_len):  # if we ended after the last char of the file, come back to get a correct chunk len
+            start_index = file_len - chunk_len - 1
+
+        chunk = file[start_index:end_index]
+
+        inp[bi] = char_tensor(chunk[:-1])
+        target[bi] = char_tensor(chunk[1:])
+    inp = Variable(inp)
+    target = Variable(target)
+    if args.cuda:
+        inp = inp.cuda()
+        target = target.cuda()
+    return inp, target, end_index
+
+def train(inp, target, end_index):
     hidden = decoder.init_hidden(args.batch_size)
     if args.cuda:
         hidden = hidden.cuda()
@@ -66,13 +89,13 @@ def train(inp, target):
     loss = 0
 
     for c in range(args.chunk_len):
-        output, hidden = decoder(inp[:,c], hidden)
+        output, hidden = decoder(inp[:, c], hidden)
         loss += criterion(output.view(args.batch_size, -1), target[:,c])
 
     loss.backward()
     decoder_optimizer.step()
     currentLoss = loss.item() / args.chunk_len
-    return currentLoss
+    return currentLoss, end_index
 
 def save():
     save_filename = os.path.splitext(os.path.basename(args.filename))[0] + '.pt'
@@ -105,8 +128,11 @@ loss_avg = 0
 try:
     print("Training for %d epochs..." % args.n_epochs)
     for epoch in tqdm(range(1, args.n_epochs + 1)):
-        loss = train(*random_training_set(args.chunk_len, args.batch_size))
-        loss_avg += loss
+        end_index = 0
+        while(end_index < file_len) :
+        # loss = train(*random_training_set(args.chunk_len, args.batch_size))
+            loss, end_index = train(*getBatch(args.chunk_len, args.batch_size, end_index))
+            loss_avg += loss
 
         if epoch % args.print_every == 0:
             print('[%s (%d %d%%) %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss))
