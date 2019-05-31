@@ -27,12 +27,14 @@ argparser.add_argument('--chunk_len', type=int, default=200)
 argparser.add_argument('--batch_size', type=int, default=100)
 argparser.add_argument('--shuffle', action='store_true')
 argparser.add_argument('--cuda', action='store_true')
+argparser.add_argument('--modelname', type=str, default=None)
 args = argparser.parse_args()
 
 if args.cuda:
     print("Using CUDA")
 
 file, file_len = read_file(args.filename)
+modelName = args.modelname
 
 def random_training_set(chunk_len, batch_size):
     inp = torch.LongTensor(batch_size, chunk_len)
@@ -99,7 +101,10 @@ def train(inp, target, end_index):
     return currentLoss, end_index
 
 def save():
-    save_filename = os.path.splitext(os.path.basename(args.filename))[0] + '.pt'
+    if modelName is not None:
+        save_filename = os.path.splitext(os.path.basename(args.filename))[0] +modelName+ '.pt'
+    else:
+        save_filename = os.path.splitext(os.path.basename(args.filename))[0] + '.pt'
     torch.save(decoder, save_filename)
     print('Saved as %s' % save_filename)
 

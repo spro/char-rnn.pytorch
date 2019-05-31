@@ -18,13 +18,14 @@ class CharRNN(nn.Module):
             self.rnn = nn.GRU(hidden_size, hidden_size, n_layers)
         elif self.model == "lstm":
             self.rnn = nn.LSTM(hidden_size, hidden_size, n_layers)
-            
+        # self.drop_layer = nn.Dropout(p=0.3)
         self.decoder = nn.Linear(hidden_size, output_size)
 
     def forward(self, input, hidden):
         batch_size = input.size(0)
         encoded = self.encoder(input)
         output, hidden = self.rnn(encoded.view(1, batch_size, -1), hidden)
+        # outputDropped = self.drop_layer(output)
         output = self.decoder(output.view(batch_size, -1))
         return output, hidden
 

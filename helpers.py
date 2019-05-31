@@ -5,8 +5,11 @@ import random
 import time
 import math
 import torch
+import string
 
 # Reading and un-unicode-encoding data
+all_characters = string.printable
+n_characters = len(all_characters)
 
 def read_file(filename):
     file = unidecode.unidecode(open(filename, encoding="utf8").read())
