@@ -22,6 +22,7 @@ argparser.add_argument('--n_epochs', type=int, default=2000)
 argparser.add_argument('--print_every', type=int, default=100)
 argparser.add_argument('--hidden_size', type=int, default=100)
 argparser.add_argument('--n_layers', type=int, default=2)
+argparser.add_argument('--dropout', type=float, default=0.3)
 argparser.add_argument('--learning_rate', type=float, default=0.01)
 argparser.add_argument('--chunk_len', type=int, default=200)
 argparser.add_argument('--batch_size', type=int, default=100)
@@ -123,10 +124,10 @@ decoder = CharRNN(
     n_characters,
     model=args.model,
     n_layers=args.n_layers,
+    dropout=args.dropout
 )
 decoder_optimizer = torch.optim.Adam(decoder.parameters(), lr=args.learning_rate)
 criterion = nn.CrossEntropyLoss()
-
 if args.cuda:
     decoder.cuda()
 

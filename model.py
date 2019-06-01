@@ -5,7 +5,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 
 class CharRNN(nn.Module):
-    def __init__(self, input_size, hidden_size, output_size, model="gru", n_layers=1):
+    def __init__(self, input_size, hidden_size, output_size, model="gru", n_layers=1, dropout = 0.3):
         super(CharRNN, self).__init__()
         self.model = model.lower()
         self.input_size = input_size
@@ -18,14 +18,14 @@ class CharRNN(nn.Module):
             self.rnn = nn.GRU(hidden_size, hidden_size, n_layers)
         elif self.model == "lstm":
             self.rnn = nn.LSTM(hidden_size, hidden_size, n_layers)
-        # self.drop_layer = nn.Dropout(p=0.3)
+        self.drop_layer = nn.Dropout(p=dropout)
         self.decoder = nn.Linear(hidden_size, output_size)
 
     def forward(self, input, hidden):
         batch_size = input.size(0)
         encoded = self.encoder(input)
         output, hidden = self.rnn(encoded.view(1, batch_size, -1), hidden)
-        # outputDropped = self.drop_layer(output)
+        output = self.drop_layer(output)
         output = self.decoder(output.view(batch_size, -1))
         return output, hidden
 
@@ -37,7 +37,6 @@ class CharRNN(nn.Module):
 
     def init_hidden(self, batch_size):
         if self.model == "lstm":
-            return (Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size)),
-                    Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size)))
-        return Variable(torch.zeros(self.n_layers, batch_size, self.hidden_size))
+            return Variable(torch.zeros(1, batch_size, self.hidden_size))
+        return Variable(torch.zeros(1, batch_size, self.hidden_size))
 
