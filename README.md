@@ -59,10 +59,14 @@ Options:
 --cuda               Use CUDA
 ```
 
+
 ### TODO
 ```
-[] Add Dropout (p)
-[] Add Validation set to monitor overfitting
+[] Early stopping (?) Maybe not in few days
+[x] Add Dropout (p)
+[x] Add Validation set to monitor overfitting
+[x] Saving model at checkpoint
+[x] Saving train and validation error, with training params to file
 
 ```
 
