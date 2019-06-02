@@ -145,6 +145,17 @@ def save():
     torch.save(decoder, save_filename)
     print('Saved as %s' % save_filename)
 
+def savemodel(epoch):
+    save_filename = 'Save/'
+    directoryCheckpoint = 'Save/'+modelName
+    if not os.path.exists(directoryCheckpoint):
+        os.makedirs(directoryCheckpoint)
+    if modelName is not None:
+        directoryCheckpoint +='/'+ os.path.splitext(os.path.basename(args.train))[0] +'_'+modelName+ '_'+str(epoch) +'.pt'
+    else:
+        directoryCheckpoint +='/'+ os.path.splitext(os.path.basename(args.train))[0] + '_'+str(epoch)+'.pt'
+
+    torch.save(decoder, directoryCheckpoint)
 
 
 
@@ -198,6 +209,7 @@ try:
         if epoch % args.print_every == 0:
             print('[%s (%d %d%%) Train: %.4f Valid: %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss_avg, valid_loss_avg))
             print(generate(decoder, 'Renzi', 200, cuda=args.cuda), '\n')
+            savemodel(epoch)
 
     print("Saving...")
     save()
