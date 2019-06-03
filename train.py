@@ -79,7 +79,7 @@ def save(args):
     with open(jsonName, 'w') as json_file:
         json.dump(vars(args), json_file)
     saveLossesName = save_filename+'.csv'
-    if(args.valid is not none):
+    if(args.valid is not None):
         np.savetxt(saveLossesName, np.column_stack((train_losses, valid_losses)), delimiter=",", fmt='%s', header='Train,Valid')
     else:
         np.savetxt(saveLossesName, train_losses, delimiter=",", fmt='%s', header='Train')
