@@ -127,7 +127,12 @@ if __name__ == '__main__':
         print("Using CUDA")
 
     fileTrain, file_lenTrain = read_file(args.train)
-    fileValid, file_lenValid = read_file(args.valid)
+    try:
+        fileValid, file_lenValid = read_file(args.valid)
+    except:
+        print('No validation data supplied')
+    if(args.modelname is None):
+        print('No model name supplied -> Model checkpoint disabled')
     modelName = args.modelname
 
     all_characters = string.printable
@@ -177,7 +182,8 @@ if __name__ == '__main__':
             if epoch % args.print_every == 0:
                 print('[%s (%d %d%%) Train: %.4f Valid: %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss_avg, valid_loss_avg))
                 print(generate(decoder, 'Renzi', 200, cuda=args.cuda), '\n')
-                savemodel(args, epoch)
+                if(args.modelname is not None):
+                    savemodel(args, epoch)
 
         print("Saving...")
         save(args)
