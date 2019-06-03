@@ -44,7 +44,7 @@ def random_dataset(args,file,file_len):
 def consequent_training_set(args, num_batches, fileTrain, file_lenTrain):
     inp = torch.LongTensor(args.batch_size, args.chunk_len)
     target = torch.LongTensor(args.batch_size, args.chunk_len)
-    end_index = args.chunk_len*args.num_batches*args.batch_size + (args.batch_size*args.num_batches)
+    end_index = args.chunk_len*num_batches*args.batch_size + (args.batch_size*num_batches)
     end_reached = False
     for bi in range(args.batch_size):
         start_index = end_index
@@ -52,7 +52,7 @@ def consequent_training_set(args, num_batches, fileTrain, file_lenTrain):
         if (end_reached == True):
             start_index = random.randint(0, file_lenTrain - args.chunk_len - 1)
 
-        if (start_index + chunk_len + 1 > file_lenTrain):  # if we ended after the last char of the file, come back to get a correct chunk len
+        if (start_index + args.chunk_len + 1 > file_lenTrain):  # if we ended after the last char of the file, come back to get a correct chunk len
             start_index = file_lenTrain - args.chunk_len - 1
             end_reached = True
 
@@ -162,7 +162,6 @@ if __name__ == '__main__':
         for epoch in tqdm(range(1, args.n_epochs + 1)):
             # end_index = 0
             numBatches = 0
-
             while(numBatches < numFileBatches) :
                 if(batch_type == 0): ### Sampling batches at random
                     loss = decoder.train(*random_dataset(args,fileTrain,file_lenTrain),validation=False)
