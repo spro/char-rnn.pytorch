@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# https://github.com/spro/char-rnn.pytorch
+# https://github.com/zutotonno/char-rnn.pytorch
 
 import torch
 import torch.nn as nn
@@ -79,7 +79,10 @@ def save(args):
     with open(jsonName, 'w') as json_file:
         json.dump(vars(args), json_file)
     saveLossesName = save_filename+'.csv'
-    np.savetxt(saveLossesName, np.column_stack((train_losses, valid_losses)), delimiter=",", fmt='%s', header='Train,Valid')
+    if(args.valid is not none):
+        np.savetxt(saveLossesName, np.column_stack((train_losses, valid_losses)), delimiter=",", fmt='%s', header='Train,Valid')
+    else:
+        np.savetxt(saveLossesName, train_losses, delimiter=",", fmt='%s', header='Train')
     torch.save(decoder, save_filename)
     print('Saved as %s' % save_filename)
 
@@ -168,10 +171,10 @@ if __name__ == '__main__':
                 loss_avg += loss
                 numBatches += 1
             loss_avg /= numFileBatches
-            valid_loss_avg = decoder.train(*random_dataset(args,fileValid,file_lenValid),validation=True)
-            
+            if args.valid is not None:
+                valid_loss_avg = decoder.train(*random_dataset(args,fileValid,file_lenValid),validation=True)
+                valid_losses.append(valid_loss_avg)
             train_losses.append(loss_avg)
-            valid_losses.append(valid_loss_avg)
             if epoch % args.print_every == 0:
                 print('[%s (%d %d%%) Train: %.4f Valid: %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss_avg, valid_loss_avg))
                 print(generate(decoder, 'Renzi', 200, cuda=args.cuda), '\n')

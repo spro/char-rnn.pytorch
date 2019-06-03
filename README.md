@@ -9,28 +9,35 @@ Download [this Shakespeare dataset](https://raw.githubusercontent.com/karpathy/c
 Run `train.py` with the dataset filename to train and save the network:
 
 ```
-> python train.py shakespeare.txt
+> python train.py --train shakespeare.txt
 
 Training for 2000 epochs...
 (... 10 minutes later ...)
 Saved as shakespeare.pt
 ```
 After training the model will be saved as `[filename].pt`.
+According to the --print_every arg model checkpoints will be saved in the `Save/` folder that should be in the same fold where the train.py script is called
 
 ### Training options
 
 ```
-Usage: train.py [filename] [options]
+Usage: train.py [options]
 
 Options:
---model            Whether to use LSTM or GRU units    gru
---n_epochs         Number of epochs to train           2000
---print_every      Log learning rate at this interval  100
---hidden_size      Hidden size of GRU                  50
---n_layers         Number of GRU layers                2
---learning_rate    Learning rate                       0.01
---chunk_len        Length of training chunks           200
---batch_size       Number of examples per batch        100
+--train            Train data
+--valid            Validation data
+--model            Whether to use LSTM or GRU units         gru
+--n_epochs         Number of epochs to train                10
+--print_every      Log learning rate at this interval       100
+--hidden_size      Hidden size of GRU                       50
+--n_layers         Number of GRU layers                     2
+--learning_rate    Learning rate                            0.01
+--chunk_len        Length of training chunks                200
+--batch_size       Number of examples per batch             100
+--batch_type       Batch random (0) or sequential (1)       0
+--drop_out         drop-out rate between Recurrent layers   0
+--model_name       model(session) name, used in checkpoints 
+
 --cuda             Use CUDA
 ```
 
@@ -67,6 +74,7 @@ Options:
 [x] Add Validation set to monitor overfitting
 [x] Saving model at checkpoint
 [x] Saving train and validation error, with training params to file
+[x] Refact to more OO paradigm
 
 ```
 
