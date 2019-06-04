@@ -6,7 +6,7 @@ from torch.autograd import Variable
 
 class CharRNN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, model="gru", n_layers=1,
-     dropout = 0.3, gpu = True, batch_size = 32, chunk_len = 30, learning_rate = 0.001, optimizer = "adam"):
+     dropout = 0, gpu = True, batch_size = 32, chunk_len = 30, learning_rate = 0.001, optimizer = "adam"):
         super(CharRNN, self).__init__()
         self.model = model.lower()
         self.input_size = input_size
