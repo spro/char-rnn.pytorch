@@ -86,15 +86,15 @@ def save(args):
     torch.save(decoder, save_filename)
     print('Saved as %s' % save_filename)
 
-def savemodel(args, epoch):
+def savemodel(args):
     save_filename = 'Save/'
     directoryCheckpoint = 'Save/'+modelName
     if not os.path.exists(directoryCheckpoint):
         os.makedirs(directoryCheckpoint)
     if modelName is not None:
-        directoryCheckpoint +='/'+ os.path.splitext(os.path.basename(args.train))[0] +'_'+modelName+ '_'+str(epoch) +'.pt'
+        directoryCheckpoint +='/'+ os.path.splitext(os.path.basename(args.train))[0] +'_'+modelName+ '_Checkpoint' +'.pt'
     else:
-        directoryCheckpoint +='/'+ os.path.splitext(os.path.basename(args.train))[0] + '_'+str(epoch)+'.pt'
+        directoryCheckpoint +='/'+ os.path.splitext(os.path.basename(args.train))[0] + '_Checkpoint'+'.pt'
 
     torch.save(decoder, directoryCheckpoint)
 
@@ -163,7 +163,6 @@ if __name__ == '__main__':
     train_losses = []
     valid_losses = []
     loss_avg = 0
-    valid_loss_avg = 0
     valid_loss_best = np.inf
     patience = 1
     try:
@@ -185,15 +184,16 @@ if __name__ == '__main__':
             loss_avg /= numFileBatches
             train_losses.append(loss_avg)
             if args.valid is not None:
+                valid_loss_avg = 0
                 while(numBatchesValid < numValidBatches) :
-                    valid_loss_avg = decoder.train(*consequent_dataset(args,numBatchesValid,fileValid,file_lenValid),validation=True)
+                    valid_loss_avg += decoder.train(*consequent_dataset(args,numBatchesValid,fileValid,file_lenValid),validation=True)
                     numBatchesValid += 1
-                valid_loss_avg /= numBatchesValid
+                valid_loss_avg /= numValidBatches
                 valid_losses.append(valid_loss_avg)
                 if valid_loss_avg < valid_loss_best:
                     if(args.modelname is not None):
                         print("New best checkpoint: %.4f, old: %.4f" % (valid_loss_avg,valid_loss_best))
-                        savemodel(args, epoch)
+                        savemodel(args)
                     valid_loss_best = valid_loss_avg
                     args.early_stopping = valid_loss_best
                     patience = 1
