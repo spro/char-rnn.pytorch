@@ -121,6 +121,7 @@ if __name__ == '__main__':
     argparser.add_argument('--batch_type', type=int, default=0)
     argparser.add_argument('--cuda', action='store_true')
     argparser.add_argument('--modelname', type=str, default=None)
+    argparser.add_argument('--optimizer', type=str, default="adam")
     args = argparser.parse_args()
 
     if args.cuda:
@@ -148,7 +149,8 @@ if __name__ == '__main__':
         learning_rate=args.learning_rate,
         chunk_len= args.chunk_len,
         batch_size=args.batch_size,
-        gpu = args.cuda
+        gpu = args.cuda,
+        optimizer = args.optimizer
     )
 
 

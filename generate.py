@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# https://github.com/spro/char-rnn.pytorch
+# https://github.com/zutotonno/char-rnn.pytorch
 
 import torch
 import os

@@ -1,4 +1,4 @@
-# https://github.com/spro/char-rnn.pytorch
+# https://github.com/zutotonno/char-rnn.pytorch
 
 import torch
 import torch.nn as nn
@@ -6,7 +6,7 @@ from torch.autograd import Variable
 
 class CharRNN(nn.Module):
     def __init__(self, input_size, hidden_size, output_size, model="gru", n_layers=1,
-     dropout = 0.3, gpu = True, batch_size = 32, chunk_len = 30, learning_rate = 0.001):
+     dropout = 0.3, gpu = True, batch_size = 32, chunk_len = 30, learning_rate = 0.001, optimizer = "adam"):
         super(CharRNN, self).__init__()
         self.model = model.lower()
         self.input_size = input_size
@@ -16,6 +16,7 @@ class CharRNN(nn.Module):
         self.gpu = gpu
         self.batch_size = batch_size
         self.chunk_len = chunk_len
+        self.optimizer = optimizer
 
         self.encoder = nn.Embedding(input_size, hidden_size)
         if self.model == "gru":
@@ -23,7 +24,10 @@ class CharRNN(nn.Module):
         elif self.model == "lstm":
             self.rnn = nn.LSTM(hidden_size, hidden_size, n_layers, dropout=dropout)
         self.decoder = nn.Linear(hidden_size, output_size)
-        self.optimizer = torch.optim.Adam(self.parameters(), lr=learning_rate)
+        if self.optimizer == "adam":
+            self.optimizer = torch.optim.Adam(self.parameters(), lr=learning_rate)
+        elif self.optimizer == "rms":
+            self.optimizer = torch.optim.RMSprop(self.parameters(), lr=learning_rate)
         self.criterion = nn.CrossEntropyLoss()
         if self.gpu:
             self.cuda()
