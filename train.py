@@ -41,7 +41,7 @@ def random_dataset(args,file,file_len):
     return inp, target
 
 
-def consequent_training_set(args, num_batches, fileTrain, file_lenTrain):
+def consequent_dataset(args, num_batches, file, file_len):
     inp = torch.LongTensor(args.batch_size, args.chunk_len)
     target = torch.LongTensor(args.batch_size, args.chunk_len)
     end_index = args.chunk_len*num_batches*args.batch_size + (args.batch_size*num_batches)
@@ -50,14 +50,14 @@ def consequent_training_set(args, num_batches, fileTrain, file_lenTrain):
         start_index = end_index
 
         if (end_reached == True):
-            start_index = random.randint(0, file_lenTrain - args.chunk_len - 1)
+            start_index = random.randint(0, file_len - args.chunk_len - 1)
 
-        if (start_index + args.chunk_len + 1 > file_lenTrain):  # if we ended after the last char of the file, come back to get a correct chunk len
-            start_index = file_lenTrain - args.chunk_len - 1
+        if (start_index + args.chunk_len + 1 > file_len):  # if we ended after the last char of the file, come back to get a correct chunk len
+            start_index = file_len - args.chunk_len - 1
             end_reached = True
 
         end_index = start_index + args.chunk_len + 1 # Adding 1 to create target
-        chunk = fileTrain[start_index:end_index]
+        chunk = file[start_index:end_index]
 
         inp[bi] = char_tensor(chunk[:-1])
         target[bi] = char_tensor(chunk[1:])
@@ -119,17 +119,18 @@ if __name__ == '__main__':
     argparser.add_argument('--chunk_len', type=int, default=200)
     argparser.add_argument('--batch_size', type=int, default=100)
     argparser.add_argument('--batch_type', type=int, default=0)
+    argparser.add_argument('--early_stopping', type=int, default=10)
+    argparser.add_argument('--optimizer', type=str, default="adam")
     argparser.add_argument('--cuda', action='store_true')
     argparser.add_argument('--modelname', type=str, default=None)
-    argparser.add_argument('--optimizer', type=str, default="adam")
     args = argparser.parse_args()
-
     if args.cuda:
         print("Using CUDA")
 
     fileTrain, file_lenTrain = read_file(args.train)
     try:
         fileValid, file_lenValid = read_file(args.valid)
+        early_stopping_patience = args.early_stopping
     except:
         print('No validation data supplied')
     if(args.modelname is None):
@@ -163,29 +164,47 @@ if __name__ == '__main__':
     valid_losses = []
     loss_avg = 0
     valid_loss_avg = 0
+    valid_loss_best = np.inf
+    patience = 1
     try:
         print("Training for %d epochs..." % args.n_epochs)
         numFileBatches = math.ceil(file_lenTrain/((args.batch_size*args.chunk_len)+args.batch_size))
+        numValidBatches = math.ceil(file_lenValid/((args.batch_size*args.chunk_len)+args.batch_size))
+
         for epoch in tqdm(range(1, args.n_epochs + 1)):
             # end_index = 0
             numBatches = 0
+            numBatchesValid = 0
             while(numBatches < numFileBatches) :
                 if(batch_type == 0): ### Sampling batches at random
                     loss = decoder.train(*random_dataset(args,fileTrain,file_lenTrain),validation=False)
                 elif(batch_type == 1): ### Get consequent batches of chars without replacement
-                    loss = decoder.train(*consequent_training_set(args, numBatches,fileTrain, file_lenTrain),validation=False)
+                    loss = decoder.train(*consequent_dataset(args, numBatches,fileTrain, file_lenTrain),validation=False)
                 loss_avg += loss
                 numBatches += 1
             loss_avg /= numFileBatches
-            if args.valid is not None:
-                valid_loss_avg = decoder.train(*random_dataset(args,fileValid,file_lenValid),validation=True)
-                valid_losses.append(valid_loss_avg)
             train_losses.append(loss_avg)
+            if args.valid is not None:
+                while(numBatchesValid < numValidBatches) :
+                    valid_loss_avg = decoder.train(*consequent_dataset(args,numBatchesValid,fileValid,file_lenValid),validation=True)
+                    numBatchesValid += 1
+                valid_loss_avg /= numBatchesValid
+                valid_losses.append(valid_loss_avg)
+                if valid_loss_avg < valid_loss_best:
+                    if(args.modelname is not None):
+                        print("New best checkpoint: %.4f, old: %.4f" % (valid_loss_avg,valid_loss_best))
+                        savemodel(args, epoch)
+                    valid_loss_best = valid_loss_avg
+                    args.early_stopping = valid_loss_best
+                    patience = 1
+                else:
+                    patience += 1
+                    if(patience >= early_stopping_patience):
+                        break
+
             if epoch % args.print_every == 0:
                 print('[%s (%d %d%%) Train: %.4f Valid: %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss_avg, valid_loss_avg))
                 print(generate(decoder, 'Renzi', 200, cuda=args.cuda), '\n')
-                if(args.modelname is not None):
-                    savemodel(args, epoch)
 
         print("Saving...")
         save(args)
