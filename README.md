@@ -36,6 +36,7 @@ Options:
 --batch_size       Number of examples per batch             100
 --batch_type       Batch random (0) or sequential (1)       0
 --drop_out         drop-out rate between Recurrent layers   0
+--early_stopping   Number of validation step with no impr.  10
 --model_name       model(session) name, used in checkpoints 
 
 --cuda             Use CUDA
@@ -67,9 +68,39 @@ Options:
 ```
 
 
-### TODO
+### Grid search
 ```
-[] Early stopping (?) Maybe not in few days
+Usage : search_params.py --train [options]
+
+Hard-coded params :
+  -learning_rate : [0.001,0.01]
+  -max_epochs : [500]
+  -n_batch_size : [32,1024] (should be changed according to available memory)
+  -batch_type : [0,1] (random vs consequent sampling)
+  -model_type : [lstm, gru]
+  
+Options:
+--train     training file
+--valid     validation file
+--hidden_size_init    50
+--hidden_size_end     800
+--hidden_size_step    200
+--n_layer_init        1
+--n_layer_end         4
+--n_layer_step        1
+--chunk_len_init      20
+--chunk_len_end       90
+--chunk_len_step      10
+--early_stopping      10
+--optimizer           adam 
+--cuda                
+```
+
+### TODO
+[x] Grid search
+  -[] Adding dropout to grid search (config. with less than 1 layer doesn't need dropout!!)
+  -[] Adapt batch_size to available memory
+[x] Early stopping
 [x] Add Dropout (p)
 [x] Add Validation set to monitor overfitting
 [x] Saving model at checkpoint
