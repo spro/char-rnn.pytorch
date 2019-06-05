@@ -162,7 +162,6 @@ if __name__ == '__main__':
     start = time.time()
     train_losses = []
     valid_losses = []
-    loss_avg = 0
     valid_loss_best = np.inf
     patience = 1
     try:
@@ -174,6 +173,7 @@ if __name__ == '__main__':
             # end_index = 0
             numBatches = 0
             numBatchesValid = 0
+            loss_avg = 0
             while(numBatches < numFileBatches) :
                 if(batch_type == 0): ### Sampling batches at random
                     loss = decoder.train(*random_dataset(args,fileTrain,file_lenTrain),validation=False)
@@ -195,7 +195,7 @@ if __name__ == '__main__':
                         print("New best checkpoint: %.4f, old: %.4f" % (valid_loss_avg,valid_loss_best))
                         savemodel(args)
                     valid_loss_best = valid_loss_avg
-                    args.early_stopping = valid_loss_best
+                    args.early_stopping = epoch
                     patience = 1
                 else:
                     patience += 1
