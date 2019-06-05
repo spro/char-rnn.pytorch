@@ -151,7 +151,7 @@ if __name__ == '__main__':
     ##2
     n_layers_list = list(range(args.n_layers_init,args.n_layers_end,args.n_layers_step))
     params_list.append(n_layers_list)
-
+    ### TODO:
     # n_dropout_list = [0,0.3]
     # params_list.append(n_dropout_list)
 
@@ -159,16 +159,16 @@ if __name__ == '__main__':
     n_chunk_len_list = list(range(args.chunk_len_init,args.chunk_len_end,args.chunk_len_step))
     params_list.append(n_chunk_len_list)
     ##4
-    n_batch_size_list = [1024,2048]
+    n_batch_size_list = [32,1024]
     params_list.append(n_batch_size_list)
     ##5
     n_learning_rate_list = [0.001,0.01]
     params_list.append(n_learning_rate_list)
     ##6
-    batch_type = [0]
+    batch_type = [0,1]
     params_list.append(batch_type)
     ##7
-    model_type = ['lstm']
+    model_type = ['lstm','gru']
     params_list.append(model_type)
 
     param_combinations = list(itertools.product(*params_list))
