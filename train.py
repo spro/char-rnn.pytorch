@@ -128,8 +128,11 @@ if __name__ == '__main__':
         print("Using CUDA")
 
     fileTrain, file_lenTrain = read_file(args.train)
+
+    numFileBatches = math.ceil(file_lenTrain/((args.batch_size*args.chunk_len)+args.batch_size))
     try:
         fileValid, file_lenValid = read_file(args.valid)
+        numValidBatches = math.ceil(file_lenValid/((args.batch_size*args.chunk_len)+args.batch_size))
         early_stopping_patience = args.early_stopping
     except:
         print('No validation data supplied')
@@ -166,8 +169,6 @@ if __name__ == '__main__':
     patience = 1
     try:
         print("Training for %d epochs..." % args.n_epochs)
-        numFileBatches = math.ceil(file_lenTrain/((args.batch_size*args.chunk_len)+args.batch_size))
-        numValidBatches = math.ceil(file_lenValid/((args.batch_size*args.chunk_len)+args.batch_size))
 
         for epoch in tqdm(range(1, args.n_epochs + 1)):
             # end_index = 0
@@ -203,7 +204,10 @@ if __name__ == '__main__':
                         break
 
             if epoch % args.print_every == 0:
-                print('[%s (%d %d%%) Train: %.4f Valid: %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss_avg, valid_loss_avg))
+                if args.valid is not None:
+                    print('[%s (%d %d%%) Train: %.4f Valid: %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss_avg, valid_loss_avg))
+                else:
+                    print('[%s (%d %d%%) Train: %.4f]' % (time_since(start), epoch, epoch / args.n_epochs * 100, loss_avg))
                 print(generate(decoder, 'Renzi', 200, cuda=args.cuda), '\n')
 
         print("Saving...")

@@ -242,10 +242,10 @@ if __name__ == '__main__':
                     print(generate(decoder, 'Renzi', 200, cuda=args.cuda), '\n')
 
             print("Saving...")
-            params['early_stopping'] = args.early_stopping
-            save(modelName,params,train_losses,valid_losses)
+            param_dict['early_stopping'] = args.early_stopping
+            save(modelName,param_dict,train_losses,valid_losses)
             currentCombination += 1
         except KeyboardInterrupt:
             print("Saving before quit...")
-            save(args)
+            save(param_dict)
 
