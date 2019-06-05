@@ -97,15 +97,13 @@ Options:
 ```
 
 ### TODO
-[x] Grid search
-  -[] Adding dropout to grid search (config. with less than 1 layer doesn't need dropout!!)
-  -[] Adapt batch_size to available memory
-[x] Early stopping
-[x] Add Dropout (p)
-[x] Add Validation set to monitor overfitting
-[x] Saving model at checkpoint
-[x] Saving train and validation error, with training params to file
-[x] Refact to more OO paradigm
 
-```
+* [] Grid search (Need improv.)
 
+## DONE
+* [x] Early stopping
+* [x] Add Dropout (p)
+* [x] Add Validation set to monitor overfitting
+* [x] Saving model at checkpoint
+* [x] Saving train and validation error, with training params to file
+* [x] Refact to more OO paradigm
